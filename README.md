@@ -15,7 +15,7 @@ mkdir build
 cd build
 cmake ..
 make
-(maybe numactl or other env here) ./pperm <Algorithm name> <n>
+(maybe numactl or other env here) ./pperm <n> <Algorithm 1> [<Algorithm 2> ..] 
 ```
 
 ### Adding a new algorithm
