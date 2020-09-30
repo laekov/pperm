@@ -3,10 +3,10 @@
 
 int main(int argc, char* args[]) {
 	// TODO: Use getopt here
-	std::string algo_name = argc >= 2 ? std::string(args[1]) : "Std";
+	std::string algo_name = argc >= 2 ? std::string(args[1]) : "std";
 	int n = argc >= 3 ? atoi(args[2]) : 10;
 	
-	auto algo = PermAlgorithmRegistry::get(algo_name);
+	auto algo = PermAlgorithm::get(algo_name);
 	if (algo == nullptr) {
 		fprintf(stderr, "No such algorithm: %s\n", algo_name.c_str());
 		return 1;

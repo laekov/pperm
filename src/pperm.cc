@@ -2,8 +2,8 @@
 #include <timer.hh>
 
 
-std::unordered_map<std::string, PermAlgorithm*> \
-		PermAlgorithmRegistry::algorithms;
+std::unordered_map<std::string, PermAlgorithm*>* \
+		PermAlgorithm::algorithms = 0;
 
 
 void PermAlgorithm::warmup() {

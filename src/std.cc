@@ -8,12 +8,12 @@ private:
 protected:
 	virtual void setup_() {
 		a = new int[n];
-	}
-
-	virtual void generate_() {
 		for (int i = 0; i < n; ++i) {
 			a[i] = i;
 		}
+	}
+
+	virtual void generate_() {
 		int s = 0, is_end = 0;
 		while (!is_end) {
 			s += 1;
@@ -29,4 +29,4 @@ protected:
 	}
 };
 
-REGISTER_PERM_ALGORITHM("Std", Std);
+REGISTER_PERM_ALGORITHM("std", Std);
