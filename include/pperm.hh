@@ -5,7 +5,27 @@
 #include <unordered_map>
 
 class PermAlgorithm {
+private:
+	static std::unordered_map<std::string, PermAlgorithm*> *algorithms;
 
+public:
+	template<class A>
+	static bool add(std::string name) {
+		if (!algorithms) {
+			algorithms = new std::unordered_map<std::string, PermAlgorithm*>;
+		}
+		(*algorithms)[name] = new A();
+		return true;
+	}
+
+	static PermAlgorithm* get(std::string name) {
+		auto algo = algorithms->find(name);
+		if (algo == algorithms->end()) {
+			return nullptr;
+		}
+		return algo->second;
+	}
+	
 public:
 	PermAlgorithm() {};
 
@@ -24,31 +44,12 @@ protected:
 	virtual void generate_() = 0;
 };
 
-class PermAlgorithmRegistry {
-private:
-	static std::unordered_map<std::string, PermAlgorithm*> algorithms;
-
-public:
-	static bool add(std::string name, PermAlgorithm* algo) {
-		algorithms[name] = algo;
-		return true;
-	}
-
-	static PermAlgorithm* get(std::string name) {
-		auto algo = algorithms.find(name);
-		if (algo == algorithms.end()) {
-			return nullptr;
-		}
-		return algo->second;
-	}
-};
-
 
 bool registerAlgorithm(std::string, PermAlgorithm*);
 
 
 #define REGISTER_PERM_ALGORITHM(__NAME__, __CLASS__) \
-	bool __register_successful__ = PermAlgorithmRegistry::add(__NAME__, \
-			(PermAlgorithm*)new __CLASS__);
+	bool __register_successful_##__CLASS__##__ = \
+			PermAlgorithm::add<__CLASS__>(__NAME__);
 
 #endif  // PPERM_HH

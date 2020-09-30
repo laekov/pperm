@@ -4,6 +4,10 @@
 int main(int argc, char* args[]) {
 	// TODO: Use getopt here
 	int n = argc >= 2 ? atoi(args[1]) : 10;
+	double n_compute = n;
+	for (int i = 2; i <= n; ++i) {
+		n_compute *= i;
+	}
 	
 	for (int i = 2; i < argc; ++i) {
 		std::string algo_name(args[i]);
@@ -21,7 +25,9 @@ int main(int argc, char* args[]) {
 
 		fprintf(stderr, "Testing\n");
 		auto res = algo->benchmark();
-		printf("Algorithm %s, n = %d, mean = %.3lf ms, max = %.3lf\n", 
-				algo_name.c_str(), n, res.first * 1e3, res.second * 1e3);
+		printf("Algorithm %s, n = %d, mean = %.3lf ms, max = %.3lf, "
+				"GEPs = %.3lf\n",
+				algo_name.c_str(), n, res.first * 1e3, res.second * 1e3,
+				n_compute / res.first * 1e-9);
 	}
 }
