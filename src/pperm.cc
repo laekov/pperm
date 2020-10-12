@@ -3,7 +3,7 @@
 
 
 std::unordered_map<std::string, PermAlgorithm*>* \
-		PermAlgorithm::algorithms = 0;
+		PermAlgorithm::algorithms = nullptr;
 
 
 void PermAlgorithm::warmup() {

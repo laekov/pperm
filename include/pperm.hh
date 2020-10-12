@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class PermAlgorithm {
 private:
@@ -24,6 +25,14 @@ public:
 			return nullptr;
 		}
 		return algo->second;
+	}
+	static std::vector<std::string> getNames() {
+		std::vector<std::string> names;
+		names.reserve(algorithms->size());
+		for (auto iter = algorithms->cbegin(); iter != algorithms->cend(); iter++) {
+			names.emplace_back(iter->first);
+		}
+		return names;
 	}
 	
 public:
