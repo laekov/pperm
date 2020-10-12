@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 	auto prog_name = argv[0];
 
 	auto print_usage = [=]() {
-		fprintf(stderr, "Usage: %s [-h] [-l length (default 10)] algo1 algo2 ... algoN\n", prog_name);
+		fprintf(stderr, "Usage: %s [-h] [-l length (default 10)] [-t test times (default 16)] algo1 algo2 ... algoN\n", prog_name);
 		std::cerr << "Available algorithms: ";
 		auto algorithms = PermAlgorithm::getNames();
 		std::copy(algorithms.cbegin(), algorithms.cend(), std::ostream_iterator<const std::string>(std::cerr, " "));
@@ -23,11 +23,15 @@ int main(int argc, char* argv[]) {
 	};
 
 	int n = 10;
+	int n_test = 16;
 
-	while ((ch = getopt(argc, argv, "hl:")) != -1) {
+	while ((ch = getopt(argc, argv, "hl:t:")) != -1) {
 		switch (ch) {
 			case 'l':
 				n = atoi(optarg);
+				break;
+			case 't':
+				n_test = atoi(optarg);
 				break;
 			case 'h':
 				// falltrough
@@ -41,6 +45,10 @@ int main(int argc, char* argv[]) {
 	if (n <= 0) {
 		fprintf(stderr, "Wrong permutation length: %d\n", n);
 		exit(1);
+	}
+
+	if (n_test <= 1) {
+		fprintf(stderr, "Wrong test times: %d\n", n_test);
 	}
 
 	double n_compute = n;
@@ -70,10 +78,10 @@ int main(int argc, char* argv[]) {
 		algo->warmup();
 
 		fprintf(stderr, "Testing\n");
-		auto res = algo->benchmark();
-		printf("Algorithm %s, n = %d, mean = %.3lf ms, max = %.3lf, "
+		auto res = algo->benchmark(n_test);
+		printf("Algorithm %s, n = %d, mean = %.3lf ms, stddev = %.3lf ms, max = %.3lf ms, min = %.3lf ms, "
 				"GEPs = %.3lf\n",
-				algo_name.c_str(), n, res.first * 1e3, res.second * 1e3,
-				n_compute / res.first * 1e-9);
+				algo_name.c_str(), n_test, res.mean * 1e3, res.stddev * 1e3, res.max * 1e3, res.min * 1e3,
+				n_compute / res.mean * 1e-9);
 	}
 }

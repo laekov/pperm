@@ -5,6 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
+struct BenchmarkResult {
+	double mean, stddev, min, max;
+};
+
 class PermAlgorithm {
 private:
 	static std::unordered_map<std::string, PermAlgorithm*> *algorithms;
@@ -44,7 +48,7 @@ public:
 	}
 
 	void warmup();
-	std::pair<double, double> benchmark();
+	BenchmarkResult benchmark(int n_tests);
 
 protected:
 	int n;
