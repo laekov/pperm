@@ -60,27 +60,30 @@ protected:
 		while (top >= 0) {
 			if (top == n) {
 				s += 1;
+				/* TODO: do some callback
+				for (int i = 0; i < n; ++i) {
+					printf("%d ", a[i]);
+				}
+				putchar(10);
+				*/
 			}
 			if (top == n || stack[top] == n) {
 				--top;
-				continue;
-			}
-			int i = stack[top];
-			if (i == top) {
-				++stack[top];
-				if (top + 1 < n) {
-					stack[top + 1] = top + 1;
+				if (top >= 0) {
+					if (stack[top] > top) {
+						std::swap(a[top], a[stack[top]]);
+					}
+					++stack[top];
 				}
-				++top;
 				continue;
 			}
-			std::swap(a[i], a[top]);
-			++stack[top];
+			if (stack[top] > top) {
+				std::swap(a[stack[top]], a[top]);
+			}
 			if (top + 1 < n) {
 				stack[top + 1] = top + 1;
 			}
 			++top;
-			std::swap(a[i], a[top]);
 		}
 	}
 };
