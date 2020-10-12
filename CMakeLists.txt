@@ -15,14 +15,16 @@ include_directories("include")
 file(GLOB_RECURSE SRCS
 	src/*.cc
 )
+set_source_files_properties(${SRCS} PROPERTIES LANGUAGE CXX)
 
-if(CUDAToolkit_FOUND OR CUDA_FOUND)
-	file(GLOB_RECURSE SRCS
+if("${CUDAToolkit_FOUND}" STREQUAL "TRUE" OR "${CUDA_FOUND}" STREQUAL "TRUE")
+	enable_language(CUDA)
+	file(GLOB_RECURSE SRCS_CUDA
 		src/*.cu
 	)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPPERM_CUDA")
 endif()
 
-add_executable(pperm ${SRCS})
+add_executable(pperm ${SRCS} ${SRCS_CUDA})
 
 
