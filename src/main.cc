@@ -45,10 +45,14 @@ int main(int argc, char* argv[]) {
 	if (n <= 0) {
 		fprintf(stderr, "Wrong permutation length: %d\n", n);
 		exit(1);
+	} else {
+		fprintf(stderr, "Permutation length: %d\n", n);
 	}
 
 	if (n_test <= 1) {
 		fprintf(stderr, "Wrong test times: %d\n", n_test);
+	} else {
+		fprintf(stderr, "Test repeating times: %d\n", n_test);
 	}
 
 	double n_compute = n;
