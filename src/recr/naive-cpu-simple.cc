@@ -31,7 +31,7 @@ class NaiveRecrCpuSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("naive_recr_cpu_simple", NaiveRecrCpuSimple);
+REGISTER_PERM_ALGORITHM("naive_recr_cpu_simple", NaiveRecrCpuSimple)
 
 /*
  * Naive O(n! * n) recursion with manually implemented stack.
@@ -67,4 +67,4 @@ class NaiveRecrSimStackCpuSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("naive_recr_simstack_cpu_simple", NaiveRecrSimStackCpuSimple);
+REGISTER_PERM_ALGORITHM("naive_recr_simstack_cpu_simple", NaiveRecrSimStackCpuSimple)

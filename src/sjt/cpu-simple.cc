@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-class SJTCPUSimple : public PermAlgorithm {
+class SJTCpuSimple : public PermAlgorithm {
  private:
   int *perm, *inv;
   bool *dir;
@@ -20,7 +20,7 @@ class SJTCPUSimple : public PermAlgorithm {
 
   void generate_() override {
     int s = 0;
-    while (1) {
+    while (true) {
       int top = -1, nxt;
       for (int i(n - 1); i >= 0; i--) {
         nxt = inv[i] + (dir[i] ? 1 : -1);
@@ -48,4 +48,4 @@ class SJTCPUSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("sjt_cpu_simple", SJTCPUSimple)
+REGISTER_PERM_ALGORITHM("sjt_cpu_simple", SJTCpuSimple)

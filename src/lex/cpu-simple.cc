@@ -2,7 +2,7 @@
 #include <iostream>
 #include <pperm.hh>
 
-class LexCPUSimple : public PermAlgorithm {
+class LexCpuSimple : public PermAlgorithm {
  private:
   int *a;
 
@@ -33,4 +33,4 @@ class LexCPUSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("lex_cpu_simple", LexCPUSimple)
+REGISTER_PERM_ALGORITHM("lex_cpu_simple", LexCpuSimple)
