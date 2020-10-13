@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-class SJT: public PermAlgorithm {
+class SJTCPUSimple : public PermAlgorithm {
 private:
 	int *perm, *inv;
     bool *dir;
@@ -49,4 +49,4 @@ protected:
 	}
 };
 
-REGISTER_PERM_ALGORITHM("sjt", SJT);
+REGISTER_PERM_ALGORITHM("sjt_cpu_simple", SJTCPUSimple);

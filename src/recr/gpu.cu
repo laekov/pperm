@@ -92,7 +92,7 @@ inline int ceil(int a, int b) {
 }
 
 
-class GPURecurse: public PermAlgorithm {
+class RecurseGPU: public PermAlgorithm {
 private:
 	static const int block_size = 512;
 	int *a, prefix_len, nth;
@@ -116,5 +116,5 @@ protected:
 	}
 };
 
-REGISTER_PERM_ALGORITHM("gpu_recurse", GPURecurse);
+REGISTER_PERM_ALGORITHM("recr_gpu", RecurseGPU);
 
