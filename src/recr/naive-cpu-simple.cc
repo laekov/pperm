@@ -1,57 +1,52 @@
-/* 
+/*
  * Naive O(n! * n) recursion.
  * Should be slow.
-*/
+ */
 #include <pperm.hh>
 
 class NaiveRecrCpuSimple : public PermAlgorithm {
-private:
-	int *a, s;
+ private:
+  int *a, s;
 
-	void DFS(int cur, int occupied) {
-		if (cur == n) {
-			s += 1;
-			return;
-		}
-		for (int i = 0; i < n; ++i) {
-			if (occupied & (1 << i)) {
-				continue;
-			}
-			a[cur] = i;
-			DFS(cur + 1, occupied | (1 << i));
-		}
-	}
+  void DFS(int cur, int occupied) {
+    if (cur == n) {
+      s += 1;
+      return;
+    }
+    for (int i = 0; i < n; ++i) {
+      if (occupied & (1 << i)) {
+        continue;
+      }
+      a[cur] = i;
+      DFS(cur + 1, occupied | (1 << i));
+    }
+  }
 
-protected:
-	void setup_() override {
-		a = new int[n];
-	}
+ protected:
+  void setup_() override { a = new int[n]; }
 
-	void generate_() override {
-		s = 0;
-		DFS(0, 0);
-	}
+  void generate_() override {
+    s = 0;
+    DFS(0, 0);
+  }
 };
 
 REGISTER_PERM_ALGORITHM("naive_recr_cpu_simple", NaiveRecrCpuSimple);
-
 
 /*
  * Naive O(n! * n) recursion with manually implemented stack.
  * Expected to save great amount of function call overhead.
  * But it cannot really generate the permutation.
-*/
-#include <pperm.hh>
+ */
 #include <algorithm>
+#include <pperm.hh>
 
 class NaiveRecrSimStackCpuSimple : public PermAlgorithm {
-private:
+ private:
   int *stack, top, s;
 
-protected:
-  void setup_() override {
-    stack = new int[n * n];
-  }
+ protected:
+  void setup_() override { stack = new int[n * n]; }
 
   void generate_() override {
     s = 0;
@@ -72,5 +67,4 @@ protected:
   }
 };
 
-REGISTER_PERM_ALGORITHM("naive_recr_simstack_cpu_simple",
-                        NaiveRecrSimStackCpuSimple);
+REGISTER_PERM_ALGORITHM("naive_recr_simstack_cpu_simple", NaiveRecrSimStackCpuSimple);
