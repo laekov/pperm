@@ -7,13 +7,13 @@ class LexCPUSimple : public PermAlgorithm {
   int *a;
 
  protected:
-  virtual void setup_() {
+  void setup_() override {
     a = new int[n];
     for (int i = 0; i < n; ++i) a[i] = i;
   }
-  virtual void generate_() {
+  void generate_() override {
     int s = 0;
-    while (1) {
+    while (true) {
       for (int i(0); i < n; i++) printf("%d ", a[i]);
       puts("");
       bool Flag = false;

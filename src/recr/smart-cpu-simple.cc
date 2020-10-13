@@ -27,14 +27,14 @@ class SmartRecrCpuSimple : public PermAlgorithm {
   }
 
  protected:
-  virtual void setup_() {
+  void setup_() override {
     a = new int[n];
     for (int i = 0; i < n; ++i) {
       a[i] = i;
     }
   }
 
-  virtual void generate_() {
+  void generate_() override {
     s = 0;
     DFS(0);
   }

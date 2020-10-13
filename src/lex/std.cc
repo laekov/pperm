@@ -6,14 +6,14 @@ class Std : public PermAlgorithm {
   int *a;
 
  protected:
-  virtual void setup_() {
+  void setup_() override {
     a = new int[n];
     for (int i = 0; i < n; ++i) {
       a[i] = i;
     }
   }
 
-  virtual void generate_() {
+  void generate_() override {
     int s = 0, is_end = 0;
     while (!is_end) {
       s += 1;

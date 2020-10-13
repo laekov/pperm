@@ -7,7 +7,7 @@ class SJTCPUSimple : public PermAlgorithm {
   bool *dir;
 
  protected:
-  virtual void setup_() {
+  void setup_() override {
     perm = new int[n];
     inv = new int[n];
     dir = new bool[n];
@@ -18,7 +18,7 @@ class SJTCPUSimple : public PermAlgorithm {
     }
   }
 
-  virtual void generate_() {
+  void generate_() override {
     int s = 0;
     while (1) {
       int top = -1, nxt;
