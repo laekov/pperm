@@ -70,15 +70,15 @@ protected:
 			if (top == n || stack[top] == n) {
 				--top;
 				if (top >= 0) {
-					if (stack[top] > top) {
-						std::swap(a[top], a[stack[top]]);
+					if (++stack[top] < n) {
+						if ((n - top) & 1) {
+							std::swap(a[top], a[n - 1]);
+						} else {
+							std::swap(a[top], a[stack[top]]);
+						}
 					}
-					++stack[top];
 				}
 				continue;
-			}
-			if (stack[top] > top) {
-				std::swap(a[stack[top]], a[top]);
 			}
 			if (top + 1 < n) {
 				stack[top + 1] = top + 1;
