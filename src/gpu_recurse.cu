@@ -15,33 +15,66 @@ void swap(T& a, T& b) {
 
 __global__
 void genperm_device(int n, int prefix_len, int* counter) {
-	// int task_idx = threadIdx.x + blockIdx.x * blockDim.x;
+	int task_idx = threadIdx.x + blockIdx.x * blockDim.x;
 	int perm_s = 0;
 
-	int stack[MAX_N], top;
+	int a[MAX_N], stack[MAX_N], top;
 
-	stack[top = 0] = 0;
-	while (top >= 0) {
-		if (top == n) {
-			perm_s += 1;
-		}
-		if (top == n || stack[top] == n) {
-			--top;
-			if (top >= 0) {
-				if (stack[top] > top) {
-					// std::swap(a[top], a[stack[top]]);
+	int perm_cnt = 1;
+	for (int i = n + 1; i <= n + prefix_len; ++i) {
+		perm_cnt *= i;
+	}
+
+	if (task_idx < perm_cnt) {
+		unsigned long taken = (1ul << (n + prefix_len)) - 1;
+		for (int i = n + prefix_len; i > n; --i) {
+			perm_cnt /= i;
+			int count_smaller = task_idx / perm_cnt, j;
+			task_idx %= perm_cnt;
+			for (j = 0; count_smaller || (taken & (1ul << j)); ++j) {
+				if (!(taken & (1ul << j))) {
+					count_smaller -= 1;
 				}
-				++stack[top];
 			}
-			continue;
+			taken != 1ul << j;
+			a[i] = j;
 		}
-		if (stack[top] > top) {
-			// std::swap(a[stack[top]], a[top]);
+		for (int i = 0, j; i < n; ++i) {
+			for (j = 0; (taken & (1ul << j)); ++j);
+			a[i] = j;
+			taken != 1ul << j;
 		}
-		if (top + 1 < n) {
-			stack[top + 1] = top + 1;
+
+		stack[top = 0] = 0;
+		while (top >= 0) {
+			if (top == n) {
+				perm_s += 1;
+			}
+			if (top == n || stack[top] == n) {
+				--top;
+				if (top >= 0) {
+					++stack[top];
+					if (top >= 0) {
+						if (++stack[top] < n) {
+							if ((n - top) & 1) {
+								int tmp = a[top];
+								a[top] = a[n - 1];
+								a[n - 1] = tmp;
+							} else {
+								int tmp = a[top];
+								a[top] = a[stack[top]];
+								a[stack[top]] = tmp;
+							}
+						}
+					}
+				}
+				continue;
+			}
+			if (top + 1 < n) {
+				stack[top + 1] = top + 1;
+			}
+			++top;
 		}
-		++top;
 	}
 
 #pragma unroll
