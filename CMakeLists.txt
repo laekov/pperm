@@ -11,6 +11,8 @@ else()
 	find_package("CUDA" 10)
 endif()
 
+find_package(MPI)
+
 include_directories("include")
 
 file(GLOB_RECURSE SRCS
@@ -26,6 +28,11 @@ if("${CUDAToolkit_FOUND}" STREQUAL "TRUE" OR "${CUDA_FOUND}" STREQUAL "TRUE")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPPERM_CUDA")
 endif()
 
+
 add_executable(pperm ${SRCS} ${SRCS_CUDA})
 
-
+if(${MPI_FOUND})
+	include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+	target_link_libraries(pperm ${MPI_CXX_LIBRARIES})
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPPERM_MPI")
+endif()

@@ -7,7 +7,24 @@
 
 #include "pperm.hh"
 
+#ifdef PPERM_MPI
+#include <mpi.h>
+#endif
+
 int main(int argc, char* argv[]) {
+
+  int rank = 0;
+
+#ifdef PPERM_MPI
+  int res;
+  if ((res = MPI_Init(&argc, &argv)) != MPI_SUCCESS) {
+    fprintf(stderr, "Failed to init MPI: %d\n", res);
+    exit(1);
+  }
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
   int ch;
   opterr = 0;
   auto prog_name = argv[0];
@@ -35,21 +52,24 @@ int main(int argc, char* argv[]) {
       case 'h':
         // falltrough
       case '?':
-        print_usage();
+        if (rank == 0) print_usage();
         exit(ch != 'h');
         break;
     }
   }
 
   if (n <= 0) {
-    fprintf(stderr, "Wrong permutation length: %d\n", n);
+    if (rank == 0) fprintf(stderr, "Wrong permutation length: %d\n", n);
     exit(1);
   } else {
-    fprintf(stderr, "Permutation length: %d\n", n);
+    if (rank == 0) {
+      fprintf(stderr, "Permutation length: %d\n", n);
+    }
   }
 
   if (n_test <= 1) {
-    fprintf(stderr, "Wrong test times: %d\n", n_test);
+    if (rank == 0) fprintf(stderr, "Wrong test times: %d\n", n_test);
+    exit(1);
   } else {
     fprintf(stderr, "Test repeating times: %d\n", n_test);
   }
@@ -61,8 +81,10 @@ int main(int argc, char* argv[]) {
   }
 
   if (optind == argc) {
-    std::cerr << "No algorithm given" << std::endl;
-    print_usage();
+    if (rank == 0) {
+      std::cerr << "No algorithm given" << std::endl;
+      print_usage();
+    }
     exit(1);
   }
 
@@ -70,22 +92,27 @@ int main(int argc, char* argv[]) {
     std::string algo_name(argv[i]);
     auto algo = PermAlgorithm::get(algo_name);
     if (algo == nullptr) {
-      fprintf(stderr, "No such algorithm: %s\n", algo_name.c_str());
+      if (rank == 0) fprintf(stderr, "No such algorithm: %s\n", algo_name.c_str());
       continue;
     }
 
-    fprintf(stderr, "Setting up %s\n", algo_name.c_str());
+    if (rank == 0) fprintf(stderr, "Setting up %s\n", algo_name.c_str());
     algo->setup(n);
 
-    fprintf(stderr, "Warming up\n");
+    if (rank == 0) fprintf(stderr, "Warming up\n");
     algo->warmup();
 
-    fprintf(stderr, "Testing\n");
+    if (rank == 0) fprintf(stderr, "Testing\n");
     auto res = algo->benchmark(n_test);
-    printf(
+    if (rank == 0) printf(
         "Algorithm %s, n = %d, mean = %.3lf ms, stddev = %.3lf ms, max = %.3lf ms, min = %.3lf ms, "
         "GEPs = %.3lf\n",
         algo_name.c_str(), n_test, res.mean * 1e3, res.stddev * 1e3, res.max * 1e3, res.min * 1e3,
         n_compute / res.mean * 1e-9);
   }
+
+#ifdef PPERM_MPI
+  MPI_Finalize();
+#endif
+
 }
