@@ -4,7 +4,7 @@
 #include <pperm.hh>
 #include <timer.hh>
 
-std::unordered_map<std::string, PermAlgorithm*>* PermAlgorithm::algorithms = nullptr;
+std::map<std::string, PermAlgorithm*>* PermAlgorithm::algorithms = nullptr;
 
 void PermAlgorithm::warmup() {
   for (int i = 0; i < 10; ++i) {

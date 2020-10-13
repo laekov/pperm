@@ -2,7 +2,7 @@
 #define PPERM_HH
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 struct BenchmarkResult {
@@ -11,13 +11,13 @@ struct BenchmarkResult {
 
 class PermAlgorithm {
 private:
-	static std::unordered_map<std::string, PermAlgorithm*> *algorithms;
+	static std::map<std::string, PermAlgorithm*> *algorithms;
 
 public:
 	template<class A>
 	static bool add(std::string name) {
 		if (!algorithms) {
-			algorithms = new std::unordered_map<std::string, PermAlgorithm*>;
+			algorithms = new std::map<std::string, PermAlgorithm*>;
 		}
 		(*algorithms)[name] = new A();
 		return true;
