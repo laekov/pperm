@@ -53,18 +53,15 @@ __global__ void genperm_device(int n, int prefix_len, int* counter) {
       if (top == n || stack[top] == n) {
         --top;
         if (top >= 0) {
-          ++stack[top];
-          if (top >= 0) {
-            if (++stack[top] < n) {
-              if ((n - top) & 1) {
-                int tmp = a[top];
-                a[top] = a[n - 1];
-                a[n - 1] = tmp;
-              } else {
-                int tmp = a[top];
-                a[top] = a[stack[top]];
-                a[stack[top]] = tmp;
-              }
+          if (++stack[top] < n) {
+            if ((n - top) & 1) {
+              int tmp = a[top];
+              a[top] = a[n - 1];
+              a[n - 1] = tmp;
+            } else {
+              int tmp = a[top];
+              a[top] = a[stack[top]];
+              a[stack[top]] = tmp;
             }
           }
         }
