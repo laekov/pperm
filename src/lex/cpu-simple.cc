@@ -33,4 +33,4 @@ class LexCPUSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("lex_cpu_simple", LexCPUSimple);
+REGISTER_PERM_ALGORITHM("lex_cpu_simple", LexCPUSimple)

@@ -29,4 +29,4 @@ class Std : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("std", Std);
+REGISTER_PERM_ALGORITHM("std", Std)

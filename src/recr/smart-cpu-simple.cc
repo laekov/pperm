@@ -40,7 +40,7 @@ class SmartRecrCpuSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("smart_recr_cpu_simple", SmartRecrCpuSimple);
+REGISTER_PERM_ALGORITHM("smart_recr_cpu_simple", SmartRecrCpuSimple)
 
 /*
  * Use manually implemented stack to run the O(n!) algorithm
@@ -92,5 +92,6 @@ class SmartRecrSimStackCpuSimple : public PermAlgorithm {
       ++top;
     }
   }
+};
 
-  REGISTER_PERM_ALGORITHM("smart_recr_simstack_cpu_simple", SmartRecrSimStackCpuSimple);
+REGISTER_PERM_ALGORITHM("smart_recr_simstack_cpu_simple", SmartRecrSimStackCpuSimple)

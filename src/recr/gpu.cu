@@ -88,7 +88,7 @@ __global__ void genperm_device(int n, int prefix_len, int* counter) {
 
 inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 
-class RecurseGPU : public PermAlgorithm {
+class RecrGPU : public PermAlgorithm {
  private:
   static const int block_size = 512;
   int *a, prefix_len, nth;
@@ -112,4 +112,4 @@ class RecurseGPU : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("recr_gpu", RecurseGPU);
+REGISTER_PERM_ALGORITHM("recr_gpu", RecrGPU)

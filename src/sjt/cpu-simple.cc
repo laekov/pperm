@@ -48,4 +48,4 @@ class SJTCPUSimple : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("sjt_cpu_simple", SJTCPUSimple);
+REGISTER_PERM_ALGORITHM("sjt_cpu_simple", SJTCPUSimple)
