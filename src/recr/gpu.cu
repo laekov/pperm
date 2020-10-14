@@ -19,32 +19,7 @@ __global__ void genperm_device(int n, int prefix_len, int* counter) {
 
   int a[MAX_N], stack[MAX_N], top;
 
-  int perm_cnt = 1;
-  for (int i = n + 1; i <= n + prefix_len; ++i) {
-    perm_cnt *= i;
-  }
-
-  if (task_idx < perm_cnt) {
-    unsigned long taken = (1ul << (n + prefix_len)) - 1;
-    for (int i = n + prefix_len; i > n; --i) {
-      perm_cnt /= i;
-      int count_smaller = task_idx / perm_cnt, j;
-      task_idx %= perm_cnt;
-      for (j = 0; count_smaller || (taken & (1ul << j)); ++j) {
-        if (!(taken & (1ul << j))) {
-          count_smaller -= 1;
-        }
-      }
-      taken != 1ul << j;
-      a[i] = j;
-    }
-    for (int i = 0, j; i < n; ++i) {
-      for (j = 0; (taken & (1ul << j)); ++j)
-        ;
-      a[i] = j;
-      taken != 1ul << j;
-    }
-
+	if (idx2prefix(n, prefix_len, task_idx, a)) {
     stack[top = 0] = 0;
     while (top >= 0) {
       if (top == n) {
@@ -82,8 +57,6 @@ __global__ void genperm_device(int n, int prefix_len, int* counter) {
     counter[blockIdx.x] = blockIdx.x;
   }
 }
-
-inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 
 class RecrGpu : public PermAlgorithm {
  private:

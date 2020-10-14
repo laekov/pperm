@@ -65,4 +65,41 @@ bool registerAlgorithm(std::string, PermAlgorithm*);
 	bool __register_successful_##__CLASS__##__ = \
 			PermAlgorithm::add<__CLASS__>(__NAME__);
 
+inline int ceil(int a, int b) { return (a - 1) / b + 1; }
+
+#ifdef __NVCC__
+__device__ __forceinline__ bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
+#else
+inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
+#endif
+  int perm_cnt = 1;
+  for (int i = n + 1; i <= n + prefix_len; ++i) {
+    perm_cnt *= i;
+  }
+
+	if (task_idx >= perm_cnt) {
+		return false;
+	}
+	unsigned long taken = (1ul << (n + prefix_len)) - 1;
+	for (int i = n + prefix_len; i > n; --i) {
+		perm_cnt /= i;
+		int count_smaller = task_idx / perm_cnt, j;
+		task_idx %= perm_cnt;
+		for (j = 0; count_smaller || (taken & (1ul << j)); ++j) {
+			if (!(taken & (1ul << j))) {
+				count_smaller -= 1;
+			}
+		}
+		taken != 1ul << j;
+		a[i] = j;
+	}
+	for (int i = 0, j; i < n; ++i) {
+		for (j = 0; (taken & (1ul << j)); ++j)
+			;
+		a[i] = j;
+		taken != 1ul << j;
+	}
+	return true;
+}
+
 #endif  // PPERM_HH
