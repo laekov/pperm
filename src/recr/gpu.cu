@@ -54,25 +54,15 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
 
 class RecrGpu : public PermAlgorithm {
  private:
-  static const int block_size = 512;
-  int *a, prefix_len, nth;
+	GPU_ALGO_ARGS
 
  protected:
-  virtual void setup_() {
-    nth = 1;
-    prefix_len = 0;
-    while (prefix_len < n && nth < 6000) {
-      nth *= (n - prefix_len);
-      prefix_len += 1;
-    }
-    cudaMalloc(&a, sizeof(int) * ceil(nth, block_size));
+  void setup_() override {
+		SETUP_GPU_ALGO()
   }
 
-  virtual void generate_() {
-    dim3 grid_dim(ceil(nth, block_size));
-    dim3 block_dim(block_size);
-    genperm_recr_device<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a);
-    cudaDeviceSynchronize();
+  void generate_() override {
+		LAUNCH_GPU_ALGO(genperm_recr_device);
   }
 };
 

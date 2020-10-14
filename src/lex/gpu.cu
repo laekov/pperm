@@ -44,25 +44,15 @@ __global__ void genperm_lex_device(int n, int prefix_len, int* counter) {
 
 class LexGpu: public PermAlgorithm {
  private:
-  static const int block_size = 512;
-  int *a, prefix_len, nth;
+	GPU_ALGO_ARGS
 
  protected:
   void setup_() override {
-    nth = 1;
-    prefix_len = 0;
-    while (prefix_len < n && nth < 6000) {
-      nth *= (n - prefix_len);
-      prefix_len += 1;
-    }
-    cudaMalloc(&a, sizeof(int) * ceil(nth, block_size));
+		SETUP_GPU_ALGO()
   }
 
   void generate_() override {
-    dim3 grid_dim(ceil(nth, block_size));
-    dim3 block_dim(block_size);
-    genperm_lex_device<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a);
-    cudaDeviceSynchronize();
+		LAUNCH_GPU_ALGO(genperm_lex_device);
   }
 };
 

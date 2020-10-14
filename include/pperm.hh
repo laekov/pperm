@@ -72,6 +72,27 @@ inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 #define MAX_N 30
 #define FULL_MASK 0xffffffffu
 
+#define GPU_ALGO_ARGS \
+  static const int block_size = 512; \
+  int *a, prefix_len, nth;
+
+#define SETUP_GPU_ALGO() { \
+  nth = 1; \
+  prefix_len = 0; \
+  while (prefix_len < n && nth < 6000) { \
+    nth *= (n - prefix_len); \
+    prefix_len += 1; \
+  } \
+  cudaMalloc(&a, sizeof(int) * ceil(nth, block_size)); \
+}
+
+#define LAUNCH_GPU_ALGO(__KERNEL_NAME__) { \
+  dim3 grid_dim(ceil(nth, block_size)); \
+  dim3 block_dim(block_size); \
+  __KERNEL_NAME__<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a); \
+  cudaDeviceSynchronize(); \
+}
+
 template <class T>
 __device__ __forceinline__ void swap(T& a, T& b) {
   T c = a;
