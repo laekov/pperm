@@ -9,7 +9,7 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
 
   int a[MAX_N], stack[MAX_N], top;
 
-	if (idx2prefix(n, prefix_len, task_idx, a)) {
+  if (idx2prefix(n, prefix_len, task_idx, a)) {
     stack[top = 0] = 0;
     while (top >= 0) {
       if (top == n) {
@@ -43,10 +43,10 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
   for (int i = 1; i < 32; i <<= 1) {
     perm_s += __shfl_sync(FULL_MASK, perm_s, (threadIdx.x + i) % 32, 32);
   }
-	if (threadIdx.x == 0) {
-		counter[blockIdx.x] = 0;
-	}
-	__syncthreads();
+  if (threadIdx.x == 0) {
+    counter[blockIdx.x] = 0;
+  }
+  __syncthreads();
   if (threadIdx.x % 32 == 0) {
     atomicAdd(counter + blockIdx.x, perm_s);
   }

@@ -9,9 +9,9 @@ __global__ void genperm_lex_device(int n, int prefix_len, int* counter) {
 
   int a[MAX_N];
 
-	if (idx2prefix(n, prefix_len, task_idx, a)) {
-		while (true) {
-			++perm_s;
+  if (idx2prefix(n, prefix_len, task_idx, a)) {
+    while (true) {
+      ++perm_s;
       bool Flag = false;
       for (int i(n - 2); i >= 0; i--)
         if (a[i] < a[i + 1]) {
@@ -26,16 +26,16 @@ __global__ void genperm_lex_device(int n, int prefix_len, int* counter) {
         }
       if (!Flag) break;
     }
-	}
+  }
 
 #pragma unroll
   for (int i = 1; i < 32; i <<= 1) {
     perm_s += __shfl_sync(FULL_MASK, perm_s, (threadIdx.x + i) % 32, 32);
   }
-	if (threadIdx.x == 0) {
-		counter[blockIdx.x] = 0;
-	}
-	__syncthreads();
+  if (threadIdx.x == 0) {
+    counter[blockIdx.x] = 0;
+  }
+  __syncthreads();
   if (threadIdx.x % 32 == 0) {
     atomicAdd(counter + blockIdx.x, perm_s);
   }

@@ -12,12 +12,12 @@ class LexCpuSimple : public PermAlgorithm {
     for (int i = 0; i < n; ++i) a[i] = i + 1;
   }
   void generate_() override {
-		for (int i = 0; i < n; ++i) a[i] = i + 1;
-		int s = 0;
+    for (int i = 0; i < n; ++i) a[i] = i + 1;
+    int s = 0;
     while (true) {
       //for (int i(0); i < n; i++) printf("%d ", a[i]);
       //puts("");
-			++s;
+      ++s;
       bool Flag = false;
       for (int i(n - 2); i >= 0; i--)
         if (a[i] < a[i + 1]) {
@@ -32,7 +32,7 @@ class LexCpuSimple : public PermAlgorithm {
         }
       if (!Flag) break;
     }
-		// printf("%d\n", s);
+    // printf("%d\n", s);
   }
 };
 
