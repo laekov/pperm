@@ -3,17 +3,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-#define FULL_MASK 0xffffffffu
-#define MAX_N 20
-
-template <class T>
-__device__ void swap(T& a, T& b) {
-  T& c = a;
-  a = b;
-  b = c;
-}
-
-__global__ void genperm_device(int n, int prefix_len, int* counter) {
+__global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
   int task_idx = threadIdx.x + blockIdx.x * blockDim.x;
   int perm_s = 0;
 
@@ -53,8 +43,12 @@ __global__ void genperm_device(int n, int prefix_len, int* counter) {
   for (int i = 1; i < 32; i <<= 1) {
     perm_s += __shfl_sync(FULL_MASK, perm_s, (threadIdx.x + i) % 32, 32);
   }
-  if (threadIdx.x == 0) {
-    counter[blockIdx.x] = blockIdx.x;
+	if (threadIdx.x == 0) {
+		counter[blockIdx.x] = 0;
+	}
+	__syncthreads();
+  if (threadIdx.x % 32 == 0) {
+    atomicAdd(counter + blockIdx.x, perm_s);
   }
 }
 
@@ -77,7 +71,7 @@ class RecrGpu : public PermAlgorithm {
   virtual void generate_() {
     dim3 grid_dim(ceil(nth, block_size));
     dim3 block_dim(block_size);
-    genperm_device<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a);
+    genperm_recr_device<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a);
     cudaDeviceSynchronize();
   }
 };

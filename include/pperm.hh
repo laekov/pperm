@@ -68,6 +68,17 @@ bool registerAlgorithm(std::string, PermAlgorithm*);
 inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 
 #ifdef __NVCC__
+
+#define MAX_N 30
+#define FULL_MASK 0xffffffffu
+
+template <class T>
+__device__ __forceinline__ void swap(T& a, T& b) {
+  T& c = a;
+  a = b;
+  b = c;
+}
+
 __device__ __forceinline__ bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
 #else
 inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
@@ -93,8 +104,8 @@ inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
 		taken != 1ul << j;
 		a[i] = j;
 	}
-	for (int i = 0, j; i < n; ++i) {
-		for (j = 0; (taken & (1ul << j)); ++j)
+	for (int i = 0, j = 0; i < n; ++i) {
+		for (; (taken & (1ul << j)); ++j)
 			;
 		a[i] = j;
 		taken != 1ul << j;
