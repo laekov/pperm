@@ -74,7 +74,7 @@ inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 
 template <class T>
 __device__ __forceinline__ void swap(T& a, T& b) {
-  T& c = a;
+  T c = a;
   a = b;
   b = c;
 }
@@ -91,7 +91,7 @@ inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
 	if (task_idx >= perm_cnt) {
 		return false;
 	}
-	unsigned long taken = (1ul << (n + prefix_len)) - 1;
+	unsigned long taken = 0;
 	for (int i = n + prefix_len; i > n; --i) {
 		perm_cnt /= i;
 		int count_smaller = task_idx / perm_cnt, j;
@@ -101,14 +101,14 @@ inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
 				count_smaller -= 1;
 			}
 		}
-		taken != 1ul << j;
-		a[i] = j;
+		taken |= (1ul << j);
+		a[i] = j + 1;
 	}
 	for (int i = 0, j = 0; i < n; ++i) {
 		for (; (taken & (1ul << j)); ++j)
 			;
-		a[i] = j;
-		taken != 1ul << j;
+		a[i] = j + 1;
+		taken |= (1ul << j);
 	}
 	return true;
 }
