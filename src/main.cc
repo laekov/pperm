@@ -11,7 +11,7 @@
 #include <mpi.h>
 #endif
 
-int mpi_rank = 0, mpi_size = 1;
+int mpi_rank = 0, mpi_size = 1, distribution_factor = 10;
 
 int main(int argc, char* argv[]) {
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   auto prog_name = argv[0];
 
   auto print_usage = [=]() {
-    fprintf(stderr, "Usage: %s [-h] [-l length (default 10)] [-t test times (default 16)] algo1 algo2 ... algoN\n",
+    fprintf(stderr, "Usage: %s [-h] [-l length (default 10)] [-t test times (default 16)] [-d CPU distribution factor (default 10)] algo1 algo2 ... algoN\n",
             prog_name);
     std::cerr << "Available algorithms: ";
     auto algorithms = PermAlgorithmUtil::getNames();
@@ -46,13 +46,16 @@ int main(int argc, char* argv[]) {
   int n = 10;
   int n_test = 16;
 
-  while ((ch = getopt(argc, argv, "hl:t:")) != -1) {
+  while ((ch = getopt(argc, argv, "hl:t:d:")) != -1) {
     switch (ch) {
       case 'l':
         n = atoi(optarg);
         break;
       case 't':
         n_test = atoi(optarg);
+        break;
+      case 'd':
+        distribution_factor = atoi(optarg);
         break;
       case 'h':
         // falltrough
@@ -77,6 +80,13 @@ int main(int argc, char* argv[]) {
     exit(1);
   } else {
     fprintf(stderr, "Test repeating times: %d\n", n_test);
+  }
+
+  if (distribution_factor < 1) {
+    if (mpi_rank == 0) fprintf(stderr, "Wrong CPU distribution factor: %d\n", distribution_factor);
+    exit(1);
+  } else {
+    fprintf(stderr, "CPU distribution factor: %d\n", distribution_factor);
   }
 
   double n_compute = n;

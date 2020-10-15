@@ -9,7 +9,14 @@
 #define PPERM_MPI true
 #define PPERM_AVX2 true
 
+#ifdef __NVCC__
+#define PPERM_INLINE __device__ __forceinline__
+#else
+#define PPERM_INLINE inline
+#endif
+
 extern int mpi_rank, mpi_size;
+extern int distribution_factor;
 
 struct BenchmarkResult {
   double mean, stddev, min, max;
@@ -28,7 +35,7 @@ class PermAlgorithmBase {
 
   void warmup();
   BenchmarkResult benchmark(int n_tests);
-  virtual void generate_() = 0;
+  virtual size_t generate_() = 0;
 
  protected:
   int n{};
@@ -41,10 +48,10 @@ class PermAlgorithm: public PermAlgorithmBase {
  public:
   PermAlgorithm() = delete;
   explicit PermAlgorithm(const char *name_): PermAlgorithmBase(name_) {}
-  void generate_() override {
-    long i = 0;
+  size_t generate_() override {
+    size_t i = 0;
     this->generate_with_callback_([&](...){ i++; });
-    std::cerr << i << std::endl;
+    return i;
   }
   template <typename...P>
   void generate_with_callback_(P&&... params) {
@@ -126,12 +133,11 @@ __device__ __forceinline__ void swap(T& a, T& b) {
   b = c;
 }
 
-__device__ __forceinline__ bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
-#else
-inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
 #endif
+
+PPERM_INLINE bool idx2prefix(int suffix_len, int prefix_len, int task_idx, int8_t *prefix, int8_t *suffix, size_t suffix_stride) {
   int perm_cnt = 1;
-  for (int i = n + 1; i <= n + prefix_len; ++i) {
+  for (int i = suffix_len + 1; i <= suffix_len + prefix_len; ++i) {
     perm_cnt *= i;
   }
 
@@ -139,8 +145,8 @@ inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
     return false;
   }
   unsigned long taken = 0;
-  for (int i = n + prefix_len; i > n; --i) {
-    perm_cnt /= i;
+  for (int i = prefix_len; i > 0; --i) {
+    perm_cnt /= (i + suffix_len);
     int count_smaller = task_idx / perm_cnt, j;
     task_idx %= perm_cnt;
     for (j = 0; count_smaller || (taken & (1ul << j)); ++j) {
@@ -149,15 +155,18 @@ inline bool idx2prefix(int n, int prefix_len, int task_idx, int* a) {
       }
     }
     taken |= (1ul << j);
-    a[i] = j + 1;
+    prefix[i - 1] = j + 1;
   }
-  for (int i = 0, j = 0; i < n; ++i) {
-    for (; (taken & (1ul << j)); ++j)
-      ;
-    a[i] = j + 1;
+  for (int i = 0, j = 0; i < suffix_len; ++i) {
+    for (; (taken & (1ul << j)); ++j);
+    suffix[i * suffix_stride] = j + 1;
     taken |= (1ul << j);
   }
   return true;
+}
+
+PPERM_INLINE bool idx2prefix(int n, int prefix_len, int task_idx, int8_t *a) {
+  return idx2prefix(n, prefix_len, task_idx, a + n, a, 1);
 }
 
 #endif  // PPERM_HH
