@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <iostream>
 #include <vector>
 
 #define PPERM_MPI true
@@ -15,8 +16,10 @@ struct BenchmarkResult {
 };
 
 class PermAlgorithmBase {
+ private:
+  std::string name;
  public:
-  PermAlgorithmBase() = default;
+  explicit PermAlgorithmBase(const char *name_): name(name_) {}
 
   inline void setup(int n_) {
     this->n = n_;
@@ -36,11 +39,15 @@ class PermAlgorithmBase {
 template <typename T>
 class PermAlgorithm: public PermAlgorithmBase {
  public:
+  PermAlgorithm() = delete;
+  explicit PermAlgorithm(const char *name_): PermAlgorithmBase(name_) {}
   void generate_() override {
-    this->generate_([]{});
+    long i = 0;
+    this->generate_with_callback_([&](...){ i++; });
+    std::cerr << i << std::endl;
   }
   template <typename...P>
-  void generate_(P&&... params) {
+  void generate_with_callback_(P&&... params) {
     static_cast<T*>(this)->do_generate_(std::forward<P>(params)...);
   }
 };
@@ -76,10 +83,12 @@ class PermAlgorithmUtil {
   }
 };
 
+#define GENERATE_CONSTRUCTOR(__TYPE__) \
+  public: explicit __TYPE__(const char *name_): PermAlgorithm<__TYPE__>(name_) {}
 
 #define REGISTER_PERM_ALGORITHM(__NAME__, __TYPE__) \
-  bool __register_successful_##__TYPE__##__ = \
-      PermAlgorithmUtil::add(__NAME__, new __TYPE__());
+  const static bool __register_successful_##__TYPE__##__ = \
+      PermAlgorithmUtil::add(__NAME__, new __TYPE__(__NAME__));
 
 
 inline int ceil(int a, int b) { return (a - 1) / b + 1; }

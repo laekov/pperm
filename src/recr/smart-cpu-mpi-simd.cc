@@ -15,6 +15,9 @@
 #ifdef PPERM_AVX2
 
 class SmartRecrCpuMpiSimd : public PermAlgorithm<SmartRecrCpuMpiSimd> {
+
+ GENERATE_CONSTRUCTOR(SmartRecrCpuMpiSimd)
+
  protected:
   int worker_count;
   void setup_() override {
@@ -24,7 +27,7 @@ class SmartRecrCpuMpiSimd : public PermAlgorithm<SmartRecrCpuMpiSimd> {
  public:
   template <typename F>
   void do_generate_(F&& callback) {
-
+    for (int i = 0; i < 10; ++i) callback();
   }
 };
 

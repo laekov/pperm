@@ -58,6 +58,9 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
 
 
 class SJTGpu: public PermAlgorithm<SJTGpu> {
+
+  GENERATE_CONSTRUCTOR(SJTGpu)
+
  private:
   GPU_ALGO_ARGS;
 

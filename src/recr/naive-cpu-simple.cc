@@ -5,6 +5,9 @@
 #include <pperm.hh>
 
 class NaiveRecrCpuSimple : public PermAlgorithm<NaiveRecrCpuSimple> {
+
+ GENERATE_CONSTRUCTOR(NaiveRecrCpuSimple)
+
  private:
   int *a, s;
 
@@ -44,6 +47,9 @@ REGISTER_PERM_ALGORITHM("naive_recr_cpu_simple", NaiveRecrCpuSimple)
 #include <pperm.hh>
 
 class NaiveRecrSimStackCpuSimple : public PermAlgorithm<NaiveRecrSimStackCpuSimple> {
+
+ GENERATE_CONSTRUCTOR(NaiveRecrSimStackCpuSimple)
+
  private:
   int *stack, top, s;
 

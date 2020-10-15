@@ -2,6 +2,9 @@
 #include <pperm.hh>
 
 class Std : public PermAlgorithm<Std> {
+
+ GENERATE_CONSTRUCTOR(Std)
+
  private:
   int *a;
 

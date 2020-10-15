@@ -2,6 +2,9 @@
 #include <pperm.hh>
 
 class SJTCpuSimple : public PermAlgorithm<SJTCpuSimple> {
+
+ GENERATE_CONSTRUCTOR(SJTCpuSimple)
+
  private:
   int *perm, *inv;
   bool *dir;

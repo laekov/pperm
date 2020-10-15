@@ -3,8 +3,11 @@
 #include <pperm.hh>
 
 class LexCpuSimple : public PermAlgorithm<LexCpuSimple> {
+
+  GENERATE_CONSTRUCTOR(LexCpuSimple)
+
  private:
-  int *a;
+  int *a = nullptr;
 
  protected:
   void setup_() override {

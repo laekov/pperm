@@ -53,6 +53,9 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
 }
 
 class RecrGpu : public PermAlgorithm<RecrGpu> {
+
+  GENERATE_CONSTRUCTOR(RecrGpu)
+
  private:
 	GPU_ALGO_ARGS
 

@@ -7,6 +7,9 @@
 #include <pperm.hh>
 
 class SmartRecrCpuSimple : public PermAlgorithm<SmartRecrCpuSimple> {
+
+ GENERATE_CONSTRUCTOR(SmartRecrCpuSimple)
+
  private:
   int *a, s;
 
@@ -50,6 +53,9 @@ REGISTER_PERM_ALGORITHM("smart_recr_cpu_simple", SmartRecrCpuSimple)
  */
 
 class SmartRecrSimStackCpuSimple : public PermAlgorithm<SmartRecrSimStackCpuSimple> {
+
+ GENERATE_CONSTRUCTOR(SmartRecrSimStackCpuSimple)
+
  private:
   int *a, *stack, top, s;
 
