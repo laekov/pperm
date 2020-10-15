@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 
+// currently to make cmake happy
 #define PPERM_MPI true
 #define PPERM_AVX2 true
 
@@ -96,6 +97,56 @@ class PermAlgorithmUtil {
 #define REGISTER_PERM_ALGORITHM(__NAME__, __TYPE__) \
   const static bool __register_successful_##__TYPE__##__ = \
       PermAlgorithmUtil::add(__NAME__, new __TYPE__(__NAME__));
+
+
+#ifdef PPERM_AVX2
+
+#define AVX_LANES 32
+#define MAX_AVX_REGISTERS 12
+
+#define PPERM_SIMD_INIT \
+private: \
+  int suffix_len; \
+  int worker_count; \
+  int prefix_len = 0; \
+  int task_size = 1; \
+  int round_count = 0; \
+  int task_offset; \
+  int8_t *prefix, *suffix; \
+  int8_t *stack, top; \
+ \
+protected: \
+  void setup_common_() { \
+    worker_count = mpi_size * AVX_LANES; \
+    task_offset = mpi_rank * AVX_LANES; \
+    while (prefix_len < n) { \
+      task_size *= (n - prefix_len++); \
+      if (task_size >= worker_count * distribution_factor) break; \
+    } \
+    suffix_len = n - prefix_len; \
+    round_count = (task_size - 1) / worker_count + 1; \
+    if (suffix_len <= 0) { \
+      if (mpi_rank == 0) { \
+        fprintf(stderr, "Too few tasks, please increase n or decrease worker count * distribution factor\n"); \
+      } \
+      exit(1);\
+    } else if (suffix_len > MAX_AVX_REGISTERS) { \
+      if (mpi_rank == 0) { \
+        fprintf(stderr, "Too long sequence, please decrease n or increase worker count * distribution factor\n"); \
+      } \
+      exit(1); \
+    } else { \
+      if (mpi_rank == 0) { \
+        fprintf(stderr, "Prefix / Suffix: %d / %d\n", prefix_len, suffix_len); \
+        fprintf(stderr, "Tasks / Workers / Rounds: %d / %d / %d\n", task_size, worker_count, round_count); \
+      } \
+    } \
+    prefix = new int8_t[AVX_LANES * prefix_len]; \
+    suffix = new int8_t[AVX_LANES * suffix_len]; \
+    stack = new int8_t[suffix_len]; \
+  }
+
+#endif
 
 
 inline int ceil(int a, int b) { return (a - 1) / b + 1; }
