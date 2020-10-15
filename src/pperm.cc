@@ -31,7 +31,6 @@ BenchmarkResult PermAlgorithmBase::benchmark(int n_tests) {
 
 #ifdef PPERM_MPI
   if (mpi_size > 1) {
-    MPI_Barrier(MPI_COMM_WORLD);
     size_t all_count = 0;
     MPI_Reduce(&count, &all_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
     count = all_count;
