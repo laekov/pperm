@@ -1,10 +1,6 @@
 #include <immintrin.h>
 #include <pperm.hh>
 
-#ifdef PPERM_MPI
-#include <mpi.h>
-#endif
-
 #ifdef PPERM_AVX2
 
 class SJTCpuMpiSimd : public PermAlgorithm<SJTCpuMpiSimd> {
@@ -67,9 +63,6 @@ class SJTCpuMpiSimd : public PermAlgorithm<SJTCpuMpiSimd> {
         perm[nxt] = top;
         for (int i(top + 1); i < suffix_len; i++) dir[i] ^= 1;
       }
-#ifdef PPERM_MPI
-      MPI_Barrier(MPI_COMM_WORLD);
-#endif
     }
   }
 };

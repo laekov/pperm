@@ -11,8 +11,10 @@ class NaiveRecrCpuSimple : public PermAlgorithm<NaiveRecrCpuSimple> {
  private:
   int *a, s;
 
-  void DFS(int cur, int occupied) {
+  template <typename F>
+  void DFS(int cur, int occupied, F&& callback) {
     if (cur == n) {
+      callback();
       s += 1;
       return;
     }
@@ -21,7 +23,7 @@ class NaiveRecrCpuSimple : public PermAlgorithm<NaiveRecrCpuSimple> {
         continue;
       }
       a[cur] = i;
-      DFS(cur + 1, occupied | (1 << i));
+      DFS(cur + 1, occupied | (1 << i), std::forward<F>(callback));
     }
   }
 
@@ -32,7 +34,7 @@ class NaiveRecrCpuSimple : public PermAlgorithm<NaiveRecrCpuSimple> {
   template <typename F>
   void do_generate_(F&& callback) {
     s = 0;
-    DFS(0, 0);
+    DFS(0, 0, std::forward<F>(callback));
   }
 };
 
@@ -65,6 +67,7 @@ class NaiveRecrSimStackCpuSimple : public PermAlgorithm<NaiveRecrSimStackCpuSimp
       int occ = stack[top--];
       if (occ == ((1 << n) - 1)) {
         s += 1;
+        callback();
         continue;
       }
       for (int i = 0; i < n; ++i) {

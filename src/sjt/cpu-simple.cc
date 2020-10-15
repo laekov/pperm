@@ -32,6 +32,7 @@ class SJTCpuSimple : public PermAlgorithm<SJTCpuSimple> {
     int s = 0;
     while (true) {
       s += 1;
+      callback();
       int top = -1, nxt;
       for (int i(n - 1); i >= 0; i--) {
         nxt = inv[i] + (dir[i] ? 1 : -1);

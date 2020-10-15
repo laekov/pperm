@@ -22,6 +22,7 @@ class Std : public PermAlgorithm<Std> {
     int s = 0, is_end = 0;
     while (!is_end) {
       s += 1;
+      callback();
       is_end = 1;
       for (int i = 0; i + 1 < n; ++i) {
         if (a[i] < a[i + 1]) {

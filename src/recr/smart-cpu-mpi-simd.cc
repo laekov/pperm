@@ -7,10 +7,6 @@
 #include <immintrin.h>
 #include <pperm.hh>
 
-#ifdef PPERM_MPI
-#include <mpi.h>
-#endif
-
 #ifdef PPERM_AVX2
 
 class SmartRecrCpuMpiSimd : public PermAlgorithm<SmartRecrCpuMpiSimd> {
@@ -65,9 +61,6 @@ class SmartRecrCpuMpiSimd : public PermAlgorithm<SmartRecrCpuMpiSimd> {
         ++top;
       }
     }
-#ifdef PPERM_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-#endif
   }
 };
 

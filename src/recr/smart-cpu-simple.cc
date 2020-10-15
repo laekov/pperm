@@ -13,18 +13,20 @@ class SmartRecrCpuSimple : public PermAlgorithm<SmartRecrCpuSimple> {
  private:
   int *a, s;
 
-  void DFS(int cur) {
+  template <typename F>
+  void DFS(int cur, F&& callback) {
     if (cur == n) {
+      callback();
       s += 1;
       return;
     }
     for (int i = cur; i < n; ++i) {
       if (i == cur) {
-        DFS(cur + 1);
+        DFS(cur + 1, std::forward<F>(callback));
         continue;
       }
       std::swap(a[i], a[cur]);
-      DFS(cur + 1);
+      DFS(cur + 1, std::forward<F>(callback));
       std::swap(a[i], a[cur]);
     }
   }
@@ -41,7 +43,7 @@ class SmartRecrCpuSimple : public PermAlgorithm<SmartRecrCpuSimple> {
   template <typename F>
   void do_generate_(F&& callback)  {
     s = 0;
-    DFS(0);
+    DFS(0, std::forward<F>(callback));
   }
 };
 
@@ -75,6 +77,7 @@ class SmartRecrSimStackCpuSimple : public PermAlgorithm<SmartRecrSimStackCpuSimp
     stack[top = 0] = 0;
     while (top >= 0) {
       if (top == n) {
+        callback();
         s += 1;
         /* TODO: do some callback
         for (int i = 0; i < n; ++i) {

@@ -24,6 +24,7 @@ class LexCpuSimple : public PermAlgorithm<LexCpuSimple> {
       //for (int i(0); i < n; i++) printf("%d ", a[i]);
       //puts("");
       ++s;
+      callback();
       bool Flag = false;
       for (int i(n - 2); i >= 0; i--)
         if (a[i] < a[i + 1]) {

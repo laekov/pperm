@@ -6,6 +6,10 @@
 #include <iostream>
 #include <vector>
 
+#ifdef PPERM_MPI
+#include <mpi.h>
+#endif
+
 #ifdef __NVCC__
 #define PPERM_INLINE __device__ __forceinline__
 #else
@@ -24,10 +28,13 @@ struct BenchmarkResult {
 };
 
 class PermAlgorithmBase {
- private:
+ protected:
   std::string name;
+  bool is_mpi = false;
  public:
-  explicit PermAlgorithmBase(const char *name_): name(name_) {}
+  explicit PermAlgorithmBase(const char *name_): name(name_) {
+    is_mpi = name.find("mpi") != std::string::npos;
+  }
 
   inline void setup(int n_) {
     this->n = n_;
@@ -51,7 +58,12 @@ class PermAlgorithm: public PermAlgorithmBase {
   explicit PermAlgorithm(const char *name_): PermAlgorithmBase(name_) {}
   size_t generate_() override {
     size_t i = 0;
-    this->generate_with_callback_([&](...){ i++; });
+    if (mpi_rank == 0 || is_mpi) {
+      this->generate_with_callback_([&](...) { i++; });
+    }
+#ifdef PPERM_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
     return i;
   }
   template <typename...P>

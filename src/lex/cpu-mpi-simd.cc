@@ -1,10 +1,6 @@
 #include <immintrin.h>
 #include <pperm.hh>
 
-#ifdef PPERM_MPI
-#include <mpi.h>
-#endif
-
 #ifdef PPERM_AVX2
 
 class LexCpuMpiSimd : public PermAlgorithm<LexCpuMpiSimd> {
@@ -60,9 +56,6 @@ class LexCpuMpiSimd : public PermAlgorithm<LexCpuMpiSimd> {
           }
         if (!Flag) break;
       }
-#ifdef PPERM_MPI
-      MPI_Barrier(MPI_COMM_WORLD);
-#endif
     }
   }
 };
