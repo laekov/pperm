@@ -6,14 +6,14 @@
 #include <iostream>
 #include <vector>
 
-// currently to make cmake happy
-#define PPERM_MPI true
-#define PPERM_AVX2 true
-
 #ifdef __NVCC__
 #define PPERM_INLINE __device__ __forceinline__
 #else
 #define PPERM_INLINE inline
+#endif
+
+#ifdef __AVX2__
+#define PPERM_AVX2
 #endif
 
 extern int mpi_rank, mpi_size;
