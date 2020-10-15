@@ -4,15 +4,15 @@
 #include <pperm.hh>
 #include <timer.hh>
 
-std::map<std::string, PermAlgorithm*>* PermAlgorithm::algorithms = nullptr;
+std::map<std::string, PermAlgorithmBase*>* PermAlgorithmUtil::algorithms = nullptr;
 
-void PermAlgorithm::warmup() {
+void PermAlgorithmBase::warmup() {
   for (int i = 0; i < 10; ++i) {
     this->generate_();
   }
 }
 
-BenchmarkResult PermAlgorithm::benchmark(int n_tests) {
+BenchmarkResult PermAlgorithmBase::benchmark(int n_tests) {
   std::vector<double> durations;
 
   for (int i = 0; i < n_tests; ++i) {

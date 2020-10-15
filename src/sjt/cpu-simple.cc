@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-class SJTCpuSimple : public PermAlgorithm {
+class SJTCpuSimple : public PermAlgorithm<SJTCpuSimple> {
  private:
   int *perm, *inv;
   bool *dir;
@@ -18,7 +18,9 @@ class SJTCpuSimple : public PermAlgorithm {
     }
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
     for (int i = 0; i < n; ++i) {
       perm[i] = i;
       inv[i] = i;

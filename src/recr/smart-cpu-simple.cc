@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-class SmartRecrCpuSimple : public PermAlgorithm {
+class SmartRecrCpuSimple : public PermAlgorithm<SmartRecrCpuSimple> {
  private:
   int *a, s;
 
@@ -34,7 +34,9 @@ class SmartRecrCpuSimple : public PermAlgorithm {
     }
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
     s = 0;
     DFS(0);
   }
@@ -47,7 +49,7 @@ REGISTER_PERM_ALGORITHM("smart_recr_cpu_simple", SmartRecrCpuSimple)
  * Expected to be fast
  */
 
-class SmartRecrSimStackCpuSimple : public PermAlgorithm {
+class SmartRecrSimStackCpuSimple : public PermAlgorithm<SmartRecrSimStackCpuSimple> {
  private:
   int *a, *stack, top, s;
 
@@ -60,7 +62,9 @@ class SmartRecrSimStackCpuSimple : public PermAlgorithm {
     stack = new int[n];
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
     s = 0;
     stack[top = 0] = 0;
     while (top >= 0) {

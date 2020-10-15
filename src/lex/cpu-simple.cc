@@ -2,7 +2,7 @@
 #include <iostream>
 #include <pperm.hh>
 
-class LexCpuSimple : public PermAlgorithm {
+class LexCpuSimple : public PermAlgorithm<LexCpuSimple> {
  private:
   int *a;
 
@@ -11,7 +11,10 @@ class LexCpuSimple : public PermAlgorithm {
     a = new int[n];
     for (int i = 0; i < n; ++i) a[i] = i + 1;
   }
-  void generate_() override {
+
+ public:
+  template <typename F>
+  void do_generate_(F&& callback) {
     for (int i = 0; i < n; ++i) a[i] = i + 1;
     int s = 0;
     while (true) {

@@ -11,9 +11,9 @@
 #include <mpi.h>
 #endif
 
-int main(int argc, char* argv[]) {
+int mpi_rank = 0, mpi_size = 1;
 
-  int rank = 0;
+int main(int argc, char* argv[]) {
 
 #ifdef PPERM_MPI
   int res;
@@ -22,7 +22,12 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+  if (mpi_rank == 0) {
+    fprintf(stderr, "MPI initialized, size: %d\n", mpi_size);
+  }
 #endif
 
   int ch;
@@ -33,7 +38,7 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "Usage: %s [-h] [-l length (default 10)] [-t test times (default 16)] algo1 algo2 ... algoN\n",
             prog_name);
     std::cerr << "Available algorithms: ";
-    auto algorithms = PermAlgorithm::getNames();
+    auto algorithms = PermAlgorithmUtil::getNames();
     std::copy(algorithms.cbegin(), algorithms.cend(), std::ostream_iterator<const std::string>(std::cerr, " "));
     std::cerr << std::endl;
   };
@@ -52,23 +57,23 @@ int main(int argc, char* argv[]) {
       case 'h':
         // falltrough
       case '?':
-        if (rank == 0) print_usage();
+        if (mpi_rank == 0) print_usage();
         exit(ch != 'h');
         break;
     }
   }
 
   if (n <= 0) {
-    if (rank == 0) fprintf(stderr, "Wrong permutation length: %d\n", n);
+    if (mpi_rank == 0) fprintf(stderr, "Wrong permutation length: %d\n", n);
     exit(1);
   } else {
-    if (rank == 0) {
+    if (mpi_rank == 0) {
       fprintf(stderr, "Permutation length: %d\n", n);
     }
   }
 
   if (n_test <= 1) {
-    if (rank == 0) fprintf(stderr, "Wrong test times: %d\n", n_test);
+    if (mpi_rank == 0) fprintf(stderr, "Wrong test times: %d\n", n_test);
     exit(1);
   } else {
     fprintf(stderr, "Test repeating times: %d\n", n_test);
@@ -81,7 +86,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (optind == argc) {
-    if (rank == 0) {
+    if (mpi_rank == 0) {
       std::cerr << "No algorithm given" << std::endl;
       print_usage();
     }
@@ -90,21 +95,22 @@ int main(int argc, char* argv[]) {
 
   for (int i = optind; i < argc; ++i) {
     std::string algo_name(argv[i]);
-    auto algo = PermAlgorithm::get(algo_name);
+
+    auto algo = PermAlgorithmUtil::get(algo_name);
     if (algo == nullptr) {
-      if (rank == 0) fprintf(stderr, "No such algorithm: %s\n", algo_name.c_str());
+      if (mpi_rank == 0) fprintf(stderr, "No such algorithm: %s\n", algo_name.c_str());
       continue;
     }
 
-    if (rank == 0) fprintf(stderr, "Setting up %s\n", algo_name.c_str());
+    if (mpi_rank == 0) fprintf(stderr, "Setting up %s\n", algo_name.c_str());
     algo->setup(n);
 
-    if (rank == 0) fprintf(stderr, "Warming up\n");
+    if (mpi_rank == 0) fprintf(stderr, "Warming up\n");
     algo->warmup();
 
-    if (rank == 0) fprintf(stderr, "Testing\n");
+    if (mpi_rank == 0) fprintf(stderr, "Testing\n");
     auto res = algo->benchmark(n_test);
-    if (rank == 0) printf(
+    if (mpi_rank == 0) printf(
         "Algorithm %s, n = %d, mean = %.3lf ms, stddev = %.3lf ms, max = %.3lf ms, min = %.3lf ms, "
         "GEPs = %.3lf\n",
         algo_name.c_str(), n_test, res.mean * 1e3, res.stddev * 1e3, res.max * 1e3, res.min * 1e3,

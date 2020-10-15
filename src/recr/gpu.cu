@@ -52,7 +52,7 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
   }
 }
 
-class RecrGpu : public PermAlgorithm {
+class RecrGpu : public PermAlgorithm<RecrGpu> {
  private:
 	GPU_ALGO_ARGS
 
@@ -61,7 +61,9 @@ class RecrGpu : public PermAlgorithm {
 		SETUP_GPU_ALGO()
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
 		LAUNCH_GPU_ALGO(genperm_recr_device);
   }
 };

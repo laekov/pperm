@@ -5,25 +5,61 @@
 #include <map>
 #include <vector>
 
+#define PPERM_MPI true
+#define PPERM_AVX2 true
+
+extern int mpi_rank, mpi_size;
+
 struct BenchmarkResult {
   double mean, stddev, min, max;
 };
 
-class PermAlgorithm {
-private:
-  static std::map<std::string, PermAlgorithm*> *algorithms;
+class PermAlgorithmBase {
+ public:
+  PermAlgorithmBase() = default;
 
-public:
-  template<class A>
-  static bool add(std::string name) {
+  inline void setup(int n_) {
+    this->n = n_;
+    this->setup_();
+  }
+
+  void warmup();
+  BenchmarkResult benchmark(int n_tests);
+  virtual void generate_() = 0;
+
+ protected:
+  int n{};
+
+  virtual void setup_() {};
+};
+
+template <typename T>
+class PermAlgorithm: public PermAlgorithmBase {
+ public:
+  void generate_() override {
+    this->generate_([]{});
+  }
+  template <typename...P>
+  void generate_(P&&... params) {
+    static_cast<T*>(this)->do_generate_(std::forward<P>(params)...);
+  }
+};
+
+
+class PermAlgorithmUtil {
+ private:
+  static std::map<std::string, PermAlgorithmBase*> *algorithms;
+
+ public:
+  static bool add(const std::string& name, PermAlgorithmBase *algo) {
     if (!algorithms) {
-      algorithms = new std::map<std::string, PermAlgorithm*>;
+      algorithms = new std::map<std::string, PermAlgorithmBase*>;
     }
-    (*algorithms)[name] = new A();
+    (*algorithms)[name] = algo;
     return true;
   }
 
-  static PermAlgorithm* get(std::string name) {
+  static PermAlgorithmBase* get(const std::string& name) {
     auto algo = algorithms->find(name);
     if (algo == algorithms->end()) {
       return nullptr;
@@ -33,37 +69,18 @@ public:
   static std::vector<std::string> getNames() {
     std::vector<std::string> names;
     names.reserve(algorithms->size());
-    for (auto iter = algorithms->cbegin(); iter != algorithms->cend(); iter++) {
-      names.emplace_back(iter->first);
+    for (const auto & algorithm : *algorithms) {
+      names.emplace_back(algorithm.first);
     }
     return names;
   }
-  
-public:
-  PermAlgorithm() {};
-
-  inline void setup(int n_) {
-    this->n = n_;
-    this->setup_();
-  }
-
-  void warmup();
-  BenchmarkResult benchmark(int n_tests);
-
-protected:
-  int n;
-
-  virtual void setup_() {}
-  virtual void generate_() = 0;
 };
 
 
-bool registerAlgorithm(std::string, PermAlgorithm*);
+#define REGISTER_PERM_ALGORITHM(__NAME__, __TYPE__) \
+  bool __register_successful_##__TYPE__##__ = \
+      PermAlgorithmUtil::add(__NAME__, new __TYPE__());
 
-
-#define REGISTER_PERM_ALGORITHM(__NAME__, __CLASS__) \
-  bool __register_successful_##__CLASS__##__ = \
-      PermAlgorithm::add<__CLASS__>(__NAME__);
 
 inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 

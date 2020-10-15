@@ -57,7 +57,7 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
 }
 
 
-class SJTGpu: public PermAlgorithm {
+class SJTGpu: public PermAlgorithm<SJTGpu> {
  private:
   GPU_ALGO_ARGS;
 
@@ -66,7 +66,9 @@ class SJTGpu: public PermAlgorithm {
 		SETUP_GPU_ALGO()
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
 		LAUNCH_GPU_ALGO(genperm_sjt_device);
   }
 };

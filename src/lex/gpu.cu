@@ -42,7 +42,7 @@ __global__ void genperm_lex_device(int n, int prefix_len, int* counter) {
 }
 
 
-class LexGpu: public PermAlgorithm {
+class LexGpu: public PermAlgorithm<LexGpu> {
  private:
 	GPU_ALGO_ARGS
 
@@ -51,7 +51,9 @@ class LexGpu: public PermAlgorithm {
 		SETUP_GPU_ALGO()
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
 		LAUNCH_GPU_ALGO(genperm_lex_device);
   }
 };

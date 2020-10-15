@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <pperm.hh>
 
-class Std : public PermAlgorithm {
+class Std : public PermAlgorithm<Std> {
  private:
   int *a;
 
@@ -13,7 +13,9 @@ class Std : public PermAlgorithm {
     }
   }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback) {
     int s = 0, is_end = 0;
     while (!is_end) {
       s += 1;
@@ -29,4 +31,3 @@ class Std : public PermAlgorithm {
   }
 };
 
-REGISTER_PERM_ALGORITHM("std", Std)

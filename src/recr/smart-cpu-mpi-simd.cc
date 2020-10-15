@@ -7,22 +7,24 @@
 #include <immintrin.h>
 #include <pperm.hh>
 
-#if true
-//#ifdef PPERM_MPI
+#ifdef PPERM_MPI
 #include <mpi.h>
 #endif
 
 
-//#ifdef __AVX2__
-#if true
+#ifdef PPERM_AVX2
 
-class SmartRecrCpuMpiSimd : public PermAlgorithm {
+class SmartRecrCpuMpiSimd : public PermAlgorithm<SmartRecrCpuMpiSimd> {
  protected:
+  int worker_count;
   void setup_() override {
+    worker_count = 32 * mpi_size;
   }
 
-  void generate_() override {
-    __m256i a;
+ public:
+  template <typename F>
+  void do_generate_(F&& callback) {
+
   }
 };
 

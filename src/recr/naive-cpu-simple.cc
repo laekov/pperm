@@ -4,7 +4,7 @@
  */
 #include <pperm.hh>
 
-class NaiveRecrCpuSimple : public PermAlgorithm {
+class NaiveRecrCpuSimple : public PermAlgorithm<NaiveRecrCpuSimple> {
  private:
   int *a, s;
 
@@ -25,7 +25,9 @@ class NaiveRecrCpuSimple : public PermAlgorithm {
  protected:
   void setup_() override { a = new int[n]; }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback) {
     s = 0;
     DFS(0, 0);
   }
@@ -41,14 +43,16 @@ REGISTER_PERM_ALGORITHM("naive_recr_cpu_simple", NaiveRecrCpuSimple)
 #include <algorithm>
 #include <pperm.hh>
 
-class NaiveRecrSimStackCpuSimple : public PermAlgorithm {
+class NaiveRecrSimStackCpuSimple : public PermAlgorithm<NaiveRecrSimStackCpuSimple> {
  private:
   int *stack, top, s;
 
  protected:
   void setup_() override { stack = new int[n * n]; }
 
-  void generate_() override {
+ public:
+  template <typename F>
+  void do_generate_(F&& callback)  {
     s = 0;
     stack[top = 0] = 0;
     while (top >= 0) {
