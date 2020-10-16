@@ -16,6 +16,12 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
       dir[i] = false;
     }
     while (true) {
+			/*
+			for (int i = 0; i < n + prefix_len; ++i) {
+				printf("%d/%d ", (int)a[i], perm[i]);
+			}
+			printf("\n");
+			*/
       perm_s += 1;
       int top = -1, nxt;
       for (int i(n - 1); i >= 0; i--) {
@@ -30,11 +36,11 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
       if (top == -1) {
         break;
       }
+      swap(a[inv[top]], a[nxt]);
       inv[perm[nxt]] = inv[top];
       perm[inv[top]] = perm[nxt];
       inv[top] = nxt;
       perm[nxt] = top;
-      swap(a[perm[top]], a[perm[nxt]]);
       for (int i(top + 1); i < n; i++) dir[i] ^= 1;
     }
   }

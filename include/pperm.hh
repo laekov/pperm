@@ -165,6 +165,8 @@ inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 
 #ifdef __NVCC__
 
+#include <cuda_runtime.h>
+
 #define MAX_N 30
 #define FULL_MASK 0xffffffffu
 
@@ -185,7 +187,13 @@ inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 #define LAUNCH_GPU_ALGO(__KERNEL_NAME__) { \
   dim3 grid_dim(ceil(nth, block_size)); \
   dim3 block_dim(block_size); \
-  __KERNEL_NAME__<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a); \
+	__KERNEL_NAME__<<<grid_dim, block_dim>>>(n - prefix_len, prefix_len, a); \
+	cudaError_t res_code = cudaGetLastError(); \
+	if (res_code != cudaSuccess) { \
+		fprintf(stderr, "CUDA Error at %s:%d: %s\n", __FILE__, __LINE__, \
+				cudaGetErrorString(res_code)); \
+		exit(1); \
+	} \
   cudaDeviceSynchronize(); \
 }
 

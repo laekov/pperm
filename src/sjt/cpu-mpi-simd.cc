@@ -56,7 +56,7 @@ class SJTCpuMpiSimd : public PermAlgorithm<SJTCpuMpiSimd> {
         if (top == -1) {
           break;
         }
-        std::swap(a[perm[top]], a[perm[nxt]]);
+        std::swap(a[inv[top]], a[nxt]);
         inv[perm[nxt]] = inv[top];
         perm[inv[top]] = perm[nxt];
         inv[top] = nxt;
