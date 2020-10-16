@@ -41,7 +41,7 @@ class PermAlgorithmBase {
     this->setup_();
   }
 
-  void warmup();
+  void warmup(int=10);
   BenchmarkResult benchmark(int n_tests);
   virtual size_t generate_() = 0;
 

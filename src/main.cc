@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     if (mpi_rank == 0) fprintf(stderr, "Permutation length: %d\n", n);
   }
 
-  if (n_test <= 1) {
+  if (n_test == 1 || n_test < 0) {
     if (mpi_rank == 0) fprintf(stderr, "Wrong test times: %d\n", n_test);
     exit(1);
   } else {
@@ -114,15 +114,19 @@ int main(int argc, char* argv[]) {
     algo->setup(n);
 
     if (mpi_rank == 0) fprintf(stderr, "Warming up\n");
-    algo->warmup();
+    algo->warmup(n_test == 0 ? 1 : 10);
 
-    if (mpi_rank == 0) fprintf(stderr, "Testing\n");
-    auto res = algo->benchmark(n_test);
-    if (mpi_rank == 0) printf(
-        "Algorithm %s, n = %d, mean = %.3lf ms, stddev = %.3lf ms, max = %.3lf ms, min = %.3lf ms, "
-        "GEPs = %.3lf\n",
-        algo_name.c_str(), n_test, res.mean * 1e3, res.stddev * 1e3, res.max * 1e3, res.min * 1e3,
-        n_compute / res.mean * 1e-9);
+		if (n_test > 0) {
+			if (mpi_rank == 0) fprintf(stderr, "Testing\n");
+			auto res = algo->benchmark(n_test);
+			if (mpi_rank == 0) printf(
+					"Algorithm %s, n = %d, mean = %.3lf ms, stddev = %.3lf ms, max = %.3lf ms, min = %.3lf ms, "
+					"GEPs = %.3lf\n",
+					algo_name.c_str(), n_test, res.mean * 1e3, res.stddev * 1e3, res.max * 1e3, res.min * 1e3,
+					n_compute / res.mean * 1e-9);
+		} else {
+			if (mpi_rank == 0) fprintf(stderr, "Test skipped\n");
+		}
   }
 
 #ifdef PPERM_MPI

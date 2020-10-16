@@ -10,8 +10,8 @@
 
 std::map<std::string, PermAlgorithmBase*>* PermAlgorithmUtil::algorithms = nullptr;
 
-void PermAlgorithmBase::warmup() {
-  for (int i = 0; i < 10; ++i) {
+void PermAlgorithmBase::warmup(int n_runs) {
+  for (int i = 0; i < n_runs; ++i) {
     this->generate_();
   }
 }
