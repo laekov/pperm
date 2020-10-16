@@ -5,13 +5,11 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
   int task_idx = threadIdx.x + blockIdx.x * blockDim.x;
   int perm_s = 0;
 
-  int perm[MAX_N], inv[MAX_N], _a[MAX_N], a[MAX_N];
+  int perm[MAX_N], inv[MAX_N]; 
+  int8_t a[MAX_N];
   bool dir[MAX_N];
 
-  if (idx2prefix(n, prefix_len, task_idx, _a)) {
-    for (int i = n; i < n + prefix_len; ++i) {
-      a[i] = _a[i];
-    }
+  if (idx2prefix(n, prefix_len, task_idx, a)) {
     for (int i = 0; i < n; ++i) {
       perm[i] = i;
       inv[i] = i;
@@ -19,9 +17,6 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
     }
     while (true) {
       perm_s += 1;
-      for (int i = 0; i < n; ++i) {
-        a[i] = _a[perm[i]];
-      }
       int top = -1, nxt;
       for (int i(n - 1); i >= 0; i--) {
         nxt = inv[i] + (dir[i] ? 1 : -1);
@@ -39,6 +34,7 @@ __global__ void genperm_sjt_device(int n, int prefix_len, int* counter) {
       perm[inv[top]] = perm[nxt];
       inv[top] = nxt;
       perm[nxt] = top;
+      swap(a[perm[top]], a[perm[nxt]]);
       for (int i(top + 1); i < n; i++) dir[i] ^= 1;
     }
   }
@@ -66,13 +62,13 @@ class SJTGpu: public PermAlgorithm<SJTGpu> {
 
  protected:
   void setup_() override {
-		SETUP_GPU_ALGO()
+    SETUP_GPU_ALGO()
   }
 
  public:
   template <typename F>
   void do_generate_(F&& callback)  {
-		LAUNCH_GPU_ALGO(genperm_sjt_device);
+    LAUNCH_GPU_ALGO(genperm_sjt_device);
   }
 };
 

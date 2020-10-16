@@ -7,7 +7,8 @@ __global__ void genperm_recr_device(int n, int prefix_len, int* counter) {
   int task_idx = threadIdx.x + blockIdx.x * blockDim.x;
   int perm_s = 0;
 
-  int a[MAX_N], stack[MAX_N], top;
+  int stack[MAX_N], top;
+  int8_t a[MAX_N];
 
   if (idx2prefix(n, prefix_len, task_idx, a)) {
     stack[top = 0] = 0;
@@ -57,17 +58,17 @@ class RecrGpu : public PermAlgorithm<RecrGpu> {
   GENERATE_CONSTRUCTOR(RecrGpu)
 
  private:
-	GPU_ALGO_ARGS
+  GPU_ALGO_ARGS
 
  protected:
   void setup_() override {
-		SETUP_GPU_ALGO()
+    SETUP_GPU_ALGO()
   }
 
  public:
   template <typename F>
   void do_generate_(F&& callback)  {
-		LAUNCH_GPU_ALGO(genperm_recr_device);
+    LAUNCH_GPU_ALGO(genperm_recr_device);
   }
 };
 
