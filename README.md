@@ -15,12 +15,12 @@ mkdir build
 cd build
 cmake ..
 make
-(maybe numactl or other env here) ./pperm <n> <Algorithm 1> [<Algorithm 2> ..] 
+(maybe numactl or other env here) ./pperm %s [-h] [-l length (default 10)] [-t test times (default 16)] [-d CPU distribution factor (default 10)] algo1 algo2 ... algoN
 ```
 
 ### Adding a new algorithm
 
-Duplicate `src/std.cc` for a new algorithm and change the code. 
+Duplicate `src/lex/std.cc` for a new algorithm and change the code. 
 
 Remember to change the last line of the source file to register the new 
 algorithm properly.
