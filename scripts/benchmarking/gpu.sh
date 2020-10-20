@@ -19,5 +19,5 @@ gen | xargs -P 8 -n 2 --process-slot-var=WORKER_ID \
 
 for i in {8..15}
 do
-	mv l_${i}_algo_recr_gpu.log l_${i}_algo_smart_recr_gpu.log
+	mv logs/l_${i}_algo_recr_gpu.log logs/l_${i}_algo_smart_recr_gpu.log
 done

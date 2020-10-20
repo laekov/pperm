@@ -177,7 +177,7 @@ inline int ceil(int a, int b) { return (a - 1) / b + 1; }
 #define SETUP_GPU_ALGO() { \
   nth = 1; \
   prefix_len = 0; \
-  while (prefix_len < n && nth < 6000) { \
+  while (prefix_len < n && nth < 10000) { \
     nth *= (n - prefix_len); \
     prefix_len += 1; \
   } \
